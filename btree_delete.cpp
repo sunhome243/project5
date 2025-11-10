@@ -4,6 +4,8 @@
 NOTE: Please follow logic from CLRSv4 directly. Additionally, in cases 3a and 3b please check for an immediate right sibling first.
 */
 
+
+// 1 Lukas
 // delete the key k from the btree
 void BTree::remove(int k)
 {
@@ -20,6 +22,7 @@ int BTree::find_k(Node *x, int k)
 {
 }
 
+// 2 Sunho 
 // remove the key at index i from a btree leaf node x
 void BTree::remove_leaf_key(Node *x, int i)
 {
@@ -40,6 +43,7 @@ int BTree::min_key(Node *x)
 {
 }
 
+// 3 Flynn
 // merge key k and all keys and children from y into y's LEFT sibling x
 void BTree::merge_left(Node *x, Node *y, int k)
 {

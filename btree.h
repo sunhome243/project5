@@ -36,6 +36,8 @@ private:
     void swap_left(Node *x, Node *y, Node *z, int i);
     void swap_right(Node *x, Node *y, Node *z, int i);
 
+    friend void test_helpers(int &correct, int &total);
+
 public:
     BTree(const std::string &filename);
     // For debugging

@@ -43,11 +43,71 @@ void BTree::remove(Node *x, int k, bool x_root)
 {
     int i = find_k(x, k);
 
-    // First Case : Key k in node x, and x is leaf node.
+    // Case 1 : Key k in node x, and x is leaf node.
+
     if ( i < x -> n && x -> keys[i] == k && x -> leaf){
         remove_leaf_key(x, i);
         return;
     }
+    
+
+    // Case 2:  Key k in node x, and x is inside node (not leaf).
+
+    if (i < x->n && x->keys[i] == k && not x->leaf )
+    {
+        // 삭제할 키 k의 좌우 자식 노드
+        // left and right node of key k that should delete.
+        Node *y = x->c[i]; // Left-side
+        Node *z = x->c[i + 1]; // Right-side 
+
+        // Case 2-a: 왼쪽 자식 y가 최소 t개 이상의 키를 가진 경우?
+        if (y->n >= t)
+        {
+            // y의 서브트리에서 k의 선행 키(predecessor)를
+            int pred = max_key(y); 
+
+            // x의 키 k를 선행 키로 교체
+            x->keys[i] = pred;
+            
+            // k가 아닌 선행 키 pred'를 y의 서브트리에서 재귀적으로 삭제
+            remove(y, pred, false); // 재귀 호출
+
+        }
+
+        // Case 2b
+        else if (z->n >= t)
+        {
+            int succ = min_key(z);
+
+            x->keys[i] = succ;
+
+            remove(z, succ, false);
+        }
+
+
+        // Case 2c
+        else
+        {
+
+            merge_left(y, z, k); 
+
+            remove_internal_key(x, i, i+1); 
+
+            remove(y, k, false);
+
+        }
+        return; // Finishing up the Case 2
+        
+
+
+
+
+
+
+    }
+
+
+
 
 }
 

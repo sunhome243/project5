@@ -42,6 +42,5 @@ public:
     BTree(const std::string &filename);
     // For debugging
     void print();
-
     void remove(int k);
 };

@@ -13,7 +13,7 @@ NOTE: Please follow logic from CLRSv4 directly. Additionally, in cases 3a and 3b
 void BTree::remove(int k)
 {
 
-    if (not root)
+    if (!root)
     {
         return;
     }
@@ -113,7 +113,7 @@ void BTree::remove(Node *x, int k, bool x_root)
                 {
                     swap_left(x, next, left_sib, i - 1);
                 }
-                if (right_sib != nullptr) // merge with right sibling
+                else if (right_sib != nullptr) // merge with right sibling
                 {
                     merge_left(next, right_sib, x->keys[i]);
                     remove_internal_key(x, i, i + 1);

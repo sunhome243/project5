@@ -171,6 +171,10 @@ int BTree::find_k(Node *x, int k)
 
 void BTree::remove_leaf_key(Node *x, int i)
 {
+    if (!x->leaf)
+    {
+        return;
+    }
     for (int j = i; j < x->n - 1; j++)
     {
         x->keys[j] = x->keys[j + 1];

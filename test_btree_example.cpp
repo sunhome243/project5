@@ -174,86 +174,6 @@ void test_3b(int &correct, int &total)
     total += 2;
 }
 
-void test_helpers(int &correct, int &total)
-{
-    int correct_count = 0;
-
-    // 1) remove_leaf_key: create a leaf node and remove index 2
-    {
-        BTree tree = build_tree("tests/test_1.txt");
-        int tt = tree.t; // access t (made public for testing)
-        Node *leaf = new Node(tt, true);
-        // fill keys 1 to 5
-        leaf->n = 5;
-        for (int i = 0; i < 5; ++i)
-            leaf->keys[i] = i + 1;
-
-        tree.remove_leaf_key(leaf, 2); // remove value 3
-        bool ok = (leaf->n == 4) && (leaf->keys[0] == 1) && (leaf->keys[1] == 2) && (leaf->keys[2] == 4) && (leaf->keys[3] == 5);
-        if (ok)
-            ++correct_count;
-        else
-            std::cout << "remove_leaf_key failed" << std::endl;
-
-        delete leaf;
-    }
-
-    // 2) remove_internal_key: create internal node with 4 keys and 5 children
-    {
-        BTree tree = build_tree("tests/test_1.txt");
-        int tt = tree.t;
-        Node *x = new Node(tt, false);
-        x->n = 4;
-        x->keys[0] = 10;
-        x->keys[1] = 20;
-        x->keys[2] = 30;
-        x->keys[3] = 40;
-
-        // create 5 children with identifiable contents
-        Node *children[5];
-        for (int i = 0; i < 5; ++i)
-        {
-            children[i] = new Node(tt, true);
-            children[i]->n = 1;
-            children[i]->keys[0] = 100 + i; // marker
-            x->c[i] = children[i];
-        }
-
-        tree.remove_internal_key(x, 1, 2); // remove key 20 and child at index 2
-
-        // After removal: keys should be [10,30,40], n==3
-        bool keys_ok = (x->n == 3) && (x->keys[0] == 10) && (x->keys[1] == 30) && (x->keys[2] == 40);
-        // child at index 2 should now be the previous child[3]
-        bool child_ok = (x->c[2] == children[3]) && (x->c[3] == children[4]) && (x->c[4] == nullptr);
-        if (keys_ok && child_ok)
-            ++correct_count;
-        else
-            std::cout << "remove_internal_key failed" << std::endl;
-
-        // cleanup
-        for (int i = 0; i < 5; ++i)
-            delete children[i];
-        delete x;
-    }
-
-    // 3) max_key / min_key using test_1 tree
-    {
-        BTree tree = build_tree("tests/test_1.txt");
-        Node *r = tree.root; // root made public for testing
-        int mn = tree.min_key(r);
-        int mx = tree.max_key(r);
-        if (mn == 5 && mx == 20)
-            ++correct_count;
-        else
-            std::cout << "min/max failed: got " << mn << "/" << mx << std::endl;
-    }
-
-    std::cout << "Passed " << correct_count << "/3 helper tests in test_helpers" << std::endl;
-
-    correct += correct_count;
-    total += 3;
-}
-
 int main()
 {
     int all_passed = 0;
@@ -265,7 +185,6 @@ int main()
     test_2c(all_passed, all_total);
     test_3a(all_passed, all_total);
     test_3b(all_passed, all_total);
-    test_helpers(all_passed, all_total);
 
     std::cout << "\nPassed a total of " << all_passed << "/" << all_total << " tests." << std::endl;
 

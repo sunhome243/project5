@@ -1,5 +1,8 @@
 #include "btree.h"
 
+// revised because of missing include <queue>
+#include <queue>
+
 Node::Node(int t, bool leaf) : t(t), leaf(leaf), n(0)
 {
     keys = new int[2 * t - 1];

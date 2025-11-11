@@ -40,60 +40,93 @@ void BTree::remove(int k)
 
 void BTree::remove(Node *x, int k, bool x_root)
 {
-    int i = find_k(x, k);
-
-    // Case 1 : Key k in node x, and x is leaf node.
-
-    if (i < x->n && x->keys[i] == k && x->leaf)
+    while (x != nullptr)
     {
-        remove_leaf_key(x, i);
-        return;
-    }
+        int i = find_k(x, k);
 
-    // Case 2:  Key k in node x, and x is inside node (not leaf).
+        // Case 1 : Key k in node x, and x is leaf node.
 
-    if (i < x->n && x->keys[i] == k && !x->leaf)
-    {
-        // left and right node of key k that should delete. (left child= precede k, right child= follows k)
-        Node *left_node = x->c[i];      // Left-side
-        Node *right_node = x->c[i + 1]; // Right-side
-
-        // Case 2-a: left child node left_node has at least t nodes
-        if (left_node->n >= t)
+        if (i < x->n && x->keys[i] == k && x->leaf)
         {
-            // find k's predecessor from left_node
-            int pred = max_key(left_node);
-
-            // replace x.keys[i] into predecessor
-            x->keys[i] = pred;
-
-            // k가 아닌 선행 키 pred'를 left_node의 서브트리에서 재귀적으로 삭제
-            remove(left_node, pred, false);
+            remove_leaf_key(x, i);
+            return;
         }
 
-        // Case 2-b: left node has t-1 keys and right node has at least t keys (left node can not be extracted(min key req) but right node is available)
-        else if (right_node->n >= t)
+        // Case 2:  Key k in node x, and x is inside node (not leaf).
+
+        if (i < x->n && x->keys[i] == k && !x->leaf)
         {
-            int succ = min_key(right_node);
+            // left and right node of key k that should delete. (left child= precede k, right child= follows k)
+            Node *left_node = x->c[i];      // Left-side
+            Node *right_node = x->c[i + 1]; // Right-side
 
-            x->keys[i] = succ;
+            // Case 2-a: left child node left_node has at least t nodes
+            if (left_node->n >= t)
+            {
+                // find k's predecessor from left_node
+                int pred = max_key(left_node);
 
-            remove(right_node, succ, false);
+                // replace x.keys[i] into predecessor
+                x->keys[i] = pred;
+
+                // remove predecessor from left_node (recurssively)
+                remove(left_node, pred, false);
+            }
+
+            // Case 2-b: left node has t-1 keys but right node has at least t keys (left node can not be extracted(min key req) but right node is available)
+            else if (right_node->n >= t)
+            {
+                int succ = min_key(right_node);
+
+                x->keys[i] = succ;
+                // remove predecessor from left_node (recurssively)
+                remove(right_node, succ, false);
+            }
+
+            // Case 2-c: both left and right node is not available since both has t-1 keys
+            else
+            {
+
+                merge_left(left_node, right_node, k);
+
+                remove_internal_key(x, i, i + 1);
+
+                remove(left_node, k, false);
+            }
+            return; // Finishing up the Case 2
         }
-
-        // Case 2-c: both left and right node is not available since both has t-1 keys 
-        else
+        else // x is an internal node and does not contain key k
         {
+            Node *next = x->c[i];
+            Node *left_sib = (i > 0) ? x->c[i - 1] : nullptr;
+            Node *right_sib = (i < x->n) ? x->c[i + 1] : nullptr;
 
-            merge_left(left_node, right_node, k);
-
-            remove_internal_key(x, i, i + 1);
-
-            remove(left_node, k, false);
+            if (next->n == (t - 1))
+            {
+                // Check right sibling first
+                if (right_sib != nullptr && right_sib->n > t - 1)
+                {
+                    swap_right(x, next, right_sib, i);
+                }
+                // Then check left sibling
+                else if (left_sib != nullptr && left_sib->n > t - 1)
+                {
+                    swap_left(x, next, left_sib, i - 1);
+                }
+                if (right_sib != nullptr) // merge with right sibling
+                {
+                    merge_left(next, right_sib, x->keys[i]);
+                    remove_internal_key(x, i, i + 1);
+                }
+                else // merge with left sibling
+                {
+                    merge_left(left_sib, next, x->keys[i - 1]);
+                    remove_internal_key(x, i - 1, i);
+                    next = left_sib;
+                }
+            }
+            x = next; // update for the next loop
         }
-        return; // Finishing up the Case 2
-
-        // I have to continue and finish up Case 3.
     }
 }
 

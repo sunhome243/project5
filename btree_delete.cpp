@@ -190,7 +190,7 @@ int BTree::max_key(Node *x)
 {
     while (!x->leaf)
     {
-        x = x->c[x->n - 1];
+        x = x->c[x->n];
     }
     return x->keys[x->n - 1];
 }

@@ -4,7 +4,6 @@
 NOTE: Please follow logic from CLRSv4 directly. Additionally, in cases 3a and 3b please check for an immediate right sibling first.
 */
 
-// 1 Lukas
 // delete the key k from the btree
 
 // Precondition: BTree is not empty
@@ -149,7 +148,6 @@ int BTree::find_k(Node *x, int k)
     return i;
 }
 
-// 2 Sunho
 // remove the key at index i from a btree leaf node x
 
 // Precondition: x is a leaf node and 0 <= i < x->n
@@ -211,7 +209,6 @@ int BTree::min_key(Node *x)
     return x->keys[0];
 }
 
-// 3 Flynn
 // merge key k and all keys and children from y into y's LEFT sibling x
 
 // Precondition: x and y are siblings, and x has t-1 keys

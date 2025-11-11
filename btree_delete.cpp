@@ -30,6 +30,11 @@ void BTree::remove(int k)
         root = root->c[0];     // root = root -> c[0]
         delete old_Root;       // prevent memory leak
     }
+    else if (root->n == 0 && root->leaf) // if the root is leaf node and has 0 keys
+    {
+        delete root; // delete root
+        root = nullptr;
+    }
 }
 
 // delete the key k from the btree rooted at x

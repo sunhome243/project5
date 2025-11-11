@@ -1,1 +1,19 @@
+F
+C-I,K
+A,B-D,E-G,H-J-L
 
+F
+C-H,K
+A,B-D,E-G-J-L
+
+F
+C-K
+A,B-D,E-G,J-L
+
+F
+C-K
+A-D,E-G,J-L
+
+F
+C-K
+A-D-G,J-L

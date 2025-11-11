@@ -28,10 +28,9 @@ void BTree::remove(int k)
     if (root->n == 0 && !root->leaf)
     {
         Node *old_Root = root; // temporary save node
-        root = root->c[0]; // root = root -> c[0]
-        delete old_Root; // prevent memory leak
+        root = root->c[0];     // root = root -> c[0]
+        delete old_Root;       // prevent memory leak
     }
-
 }
 
 // delete the key k from the btree rooted at x
@@ -45,72 +44,57 @@ void BTree::remove(Node *x, int k, bool x_root)
 
     // Case 1 : Key k in node x, and x is leaf node.
 
-    if ( i < x -> n && x -> keys[i] == k && x -> leaf){
+    if (i < x->n && x->keys[i] == k && x->leaf)
+    {
         remove_leaf_key(x, i);
         return;
     }
-    
 
     // Case 2:  Key k in node x, and x is inside node (not leaf).
 
-    if (i < x->n && x->keys[i] == k && not x->leaf )
+    if (i < x->n && x->keys[i] == k && !x->leaf)
     {
-        // 삭제할 키 k의 좌우 자식 노드
-        // left and right node of key k that should delete.
-        Node *y = x->c[i]; // Left-side
-        Node *z = x->c[i + 1]; // Right-side 
+        // left and right node of key k that should delete. (left child= precede k, right child= follows k)
+        Node *left_node = x->c[i];      // Left-side
+        Node *right_node = x->c[i + 1]; // Right-side
 
-        // Case 2-a: 왼쪽 자식 y가 최소 t개 이상의 키를 가진 경우?
-        if (y->n >= t)
+        // Case 2-a: left child node left_node has at least t nodes
+        if (left_node->n >= t)
         {
-            // y의 서브트리에서 k의 선행 키(predecessor)를
-            int pred = max_key(y); 
+            // find k's predecessor from left_node
+            int pred = max_key(left_node);
 
-            // x의 키 k를 선행 키로 교체
+            // replace x.keys[i] into predecessor
             x->keys[i] = pred;
-            
-            // k가 아닌 선행 키 pred'를 y의 서브트리에서 재귀적으로 삭제
-            remove(y, pred, false); // 재귀 호출
 
+            // k가 아닌 선행 키 pred'를 left_node의 서브트리에서 재귀적으로 삭제
+            remove(left_node, pred, false);
         }
 
-        // Case 2b
-        else if (z->n >= t)
+        // Case 2-b: left node has t-1 keys and right node has at least t keys (left node can not be extracted(min key req) but right node is available)
+        else if (right_node->n >= t)
         {
-            int succ = min_key(z);
+            int succ = min_key(right_node);
 
             x->keys[i] = succ;
 
-            remove(z, succ, false);
+            remove(right_node, succ, false);
         }
 
-
-        // Case 2c
+        // Case 2-c: both left and right node is not available since both has t-1 keys 
         else
         {
 
-            merge_left(y, z, k); 
+            merge_left(left_node, right_node, k);
 
-            remove_internal_key(x, i, i+1); 
+            remove_internal_key(x, i, i + 1);
 
-            remove(y, k, false);
-
+            remove(left_node, k, false);
         }
         return; // Finishing up the Case 2
-        
 
         // I have to continue and finish up Case 3.
-
-
-
-
-
-
     }
-
-
-
-
 }
 
 // return the index i of the first key in the btree node x where k <= x.keys[i]

@@ -94,6 +94,17 @@ void BTree::remove(Node *x, int k, bool x_root)
             }
             return; // Finishing up the Case 2
         }
+
+        // Case 3: Key k is not in node x
+        
+        // Case 1, 2 failed and x is leaf node, then there is no key k in the tree.
+        if (x->leaf) 
+        {
+            return; 
+        }
+
+        // now we can ensure that x is an internal node and does not contain key k
+
         else // x is an internal node and does not contain key k
         {
             Node *next = x->c[i];

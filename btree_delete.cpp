@@ -86,6 +86,7 @@ void BTree::remove(Node *x, int k, bool x_root)
             // Case 2-c: both left and right node is not available since both has t-1 keys
             else
             {
+
                 merge_left(left_node, right_node, k);
 
                 remove_internal_key(x, i, i + 1);
@@ -94,7 +95,7 @@ void BTree::remove(Node *x, int k, bool x_root)
             }
             return; // Finishing up the Case 2
         }
-        else // Case 3: x is an internal node and does not contain key k
+        else // x is an internal node and does not contain key k
         {
             Node *next = x->c[i];
             Node *left_sib = (i > 0) ? x->c[i - 1] : nullptr;
@@ -102,31 +103,29 @@ void BTree::remove(Node *x, int k, bool x_root)
 
             if (next->n == (t - 1))
             {
-                // Case 3-1-a: Check if right sibling has at least t keys
+                // Check right sibling first
                 if (right_sib != nullptr && right_sib->n > t - 1)
                 {
                     swap_right(x, next, right_sib, i);
                 }
-                // Case 3-1-b: Then check if left sibling has at least t keys
+                // Then check left sibling
                 else if (left_sib != nullptr && left_sib->n > t - 1)
                 {
                     swap_left(x, next, left_sib, i - 1);
                 }
-                // Case 3-2-a: Check if right sibling exists for merging
-                else if (right_sib != nullptr)
+                else if (right_sib != nullptr) // merge with right sibling
                 {
                     merge_left(next, right_sib, x->keys[i]);
                     remove_internal_key(x, i, i + 1);
                 }
-                // Case 3-2-b: merge with left sibling
-                else 
+                else // merge with left sibling
                 {
                     merge_left(left_sib, next, x->keys[i - 1]);
                     remove_internal_key(x, i - 1, i);
                     next = left_sib;
                 }
             }
-            x = next; // Update for the next loop
+            x = next; // update for the next loop
         }
     }
 }
@@ -152,6 +151,10 @@ int BTree::find_k(Node *x, int k)
 
 // 2 Sunho
 // remove the key at index i from a btree leaf node x
+
+// Precondition: x is a leaf node and 0 <= i < x->n
+// Postcondition: key at index i is removed from node x
+
 void BTree::remove_leaf_key(Node *x, int i)
 {
     for (int j = i; j < x->n - 1; j++)
@@ -162,6 +165,10 @@ void BTree::remove_leaf_key(Node *x, int i)
 }
 
 // remove the key at index i and child at index j from a btree internal node x
+
+// Precondition: x is an internal node and 0 <= i < x->n, 0 <= j <= x->n
+// Postcondition: key at index i and child at index j are removed from node x
+
 void BTree::remove_internal_key(Node *x, int i, int j)
 {
     for (int k = i; k < x->n - 1; k++)
@@ -177,6 +184,10 @@ void BTree::remove_internal_key(Node *x, int i, int j)
 }
 
 // return the max key in the btree rooted at node x
+
+// Precondition: x is a valid BTree node
+// Postcondition: returns the maximum key in the subtree rooted at x
+
 int BTree::max_key(Node *x)
 {
     while (!x->leaf)
@@ -187,6 +198,10 @@ int BTree::max_key(Node *x)
 }
 
 // return the min key in the btree rooted at node x
+
+// Precondition: x is a valid BTree node
+// Postcondition: returns the minimum key in the subtree rooted at x
+
 int BTree::min_key(Node *x)
 {
     while (!x->leaf)
@@ -198,72 +213,71 @@ int BTree::min_key(Node *x)
 
 // 3 Flynn
 // merge key k and all keys and children from y into y's LEFT sibling x
+
+// Precondition: x and y are siblings, and x has t-1 keys
+// Postcondition: all keys and children from y and key k are merged into x, and y is deleted
+
 void BTree::merge_left(Node *x, Node *y, int k)
 {
     // Add the separating key k to x
     x->keys[x->n] = k;
-
+    
     // Copy all keys from y to x after k
-    for (int i = 0; i < y->n; i++)
-    {
+    for (int i = 0; i < y->n; i++) {
         x->keys[x->n + 1 + i] = y->keys[i];
     }
-
+    
     // Copy all children from y to x (if internal node)
-    if (!x->leaf)
-    {
-        for (int i = 0; i <= y->n; i++)
-        {
+    if (!x->leaf) {
+        for (int i = 0; i <= y->n; i++) {
             x->c[x->n + 1 + i] = y->c[i];
         }
     }
-
+    
     // Update x's key count (original keys + separator + y's keys)
     x->n += y->n + 1;
-
+    
     // Delete the now-empty node y
     delete y;
 }
 
 // merge key k and all keys and children from y into y's RIGHT sibling x
+
+// Precondition: x and y are siblings, and x has t-1 keys
+// Postcondition: all keys and children from y and key k are merged into x, and y is deleted
+
 void BTree::merge_right(Node *x, Node *y, int k)
 {
     // Shift x's existing keys right to make room for y's keys and k
-    for (int i = x->n - 1; i >= 0; i--)
-    {
+    for (int i = x->n - 1; i >= 0; i--) {
         x->keys[i + y->n + 1] = x->keys[i];
     }
-
+    
     // Shift x's existing children right (if internal node)
-    if (!x->leaf)
-    {
-        for (int i = x->n; i >= 0; i--)
-        {
+    if (!x->leaf) {
+        for (int i = x->n; i >= 0; i--) {
             x->c[i + y->n + 1] = x->c[i];
         }
     }
-
+    
     // Copy y's keys to the beginning of x
-    for (int i = 0; i < y->n; i++)
-    {
+    for (int i = 0; i < y->n; i++) {
         x->keys[i] = y->keys[i];
     }
-
+    
     // Place separator key k after y's keys
     x->keys[y->n] = k;
-
+    
     // Copy y's children to the beginning of x (if internal node)
-    if (!x->leaf)
-    {
-        for (int i = 0; i <= y->n; i++)
-        {
+    if (!x->leaf) {
+        for (int i = 0; i <= y->n; i++) {
             x->c[i] = y->c[i];
         }
     }
-
+    
     // Update x's key count
     x->n += y->n + 1;
-
+    
     // Delete the now-empty node y
     delete y;
 }
@@ -272,35 +286,35 @@ void BTree::merge_right(Node *x, Node *y, int k)
 // Move a key from y's LEFT sibling z up into x
 // Move appropriate child pointer from z into y
 // Let i be the index of the key dividing y and z in x
+
+// Precondition: y has t-1 keys and z has at least t keys
+// Postcondition: y has one more key, z has one less key, and the parent x is updated accordingly.
+
 void BTree::swap_left(Node *x, Node *y, Node *z, int i)
 {
     // Shift y's keys right to make room at the beginning
-    for (int j = y->n - 1; j >= 0; j--)
-    {
+    for (int j = y->n - 1; j >= 0; j--) {
         y->keys[j + 1] = y->keys[j];
     }
-
+    
     // Shift y's children right (if internal node)
-    if (!y->leaf)
-    {
-        for (int j = y->n; j >= 0; j--)
-        {
+    if (!y->leaf) {
+        for (int j = y->n; j >= 0; j--) {
             y->c[j + 1] = y->c[j];
         }
     }
-
+    
     // Move parent's separating key down to y
     y->keys[0] = x->keys[i];
-
+    
     // Move z's rightmost child to y's leftmost position (if internal)
-    if (!y->leaf)
-    {
+    if (!y->leaf) {
         y->c[0] = z->c[z->n];
     }
-
+    
     // Move z's rightmost key up to parent
     x->keys[i] = z->keys[z->n - 1];
-
+    
     // Update key counts
     y->n++;
     z->n--;
@@ -310,35 +324,35 @@ void BTree::swap_left(Node *x, Node *y, Node *z, int i)
 // Move a key from y's RIGHT sibling z up into x
 // Move appropriate child pointer from z into y
 // Let i be the index of the key dividing y and z in x
+
+// Precondition: y has t-1 keys and z has at least t keys
+// Postcondition: y has one more key, z has one less key, and the parent x is updated accordingly.
+
 void BTree::swap_right(Node *x, Node *y, Node *z, int i)
 {
     // Move parent's separating key down to end of y
     y->keys[y->n] = x->keys[i];
-
+    
     // Move z's leftmost child to y's rightmost position (if internal)
-    if (!y->leaf)
-    {
+    if (!y->leaf) {
         y->c[y->n + 1] = z->c[0];
     }
-
+    
     // Move z's leftmost key up to parent
     x->keys[i] = z->keys[0];
-
+    
     // Shift z's remaining keys left
-    for (int j = 0; j < z->n - 1; j++)
-    {
+    for (int j = 0; j < z->n - 1; j++) {
         z->keys[j] = z->keys[j + 1];
     }
-
+    
     // Shift z's remaining children left (if internal node)
-    if (!z->leaf)
-    {
-        for (int j = 0; j < z->n; j++)
-        {
+    if (!z->leaf) {
+        for (int j = 0; j < z->n; j++) {
             z->c[j] = z->c[j + 1];
         }
     }
-
+    
     // Update key counts
     y->n++;
     z->n--;

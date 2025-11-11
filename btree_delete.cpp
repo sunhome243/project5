@@ -7,8 +7,8 @@ NOTE: Please follow logic from CLRSv4 directly. Additionally, in cases 3a and 3b
 // 1 Lukas
 // delete the key k from the btree
 
-// Precondition:
-// Postcondition:
+// Precondition: BTree is not empty
+// Postcondition: Key k is removed from the BTree if it exists
 
 void BTree::remove(int k)
 {
@@ -35,8 +35,8 @@ void BTree::remove(int k)
 
 // delete the key k from the btree rooted at x
 
-// Precondition:
-// Postcondition:
+// Precondition : BTree is not empty
+// Postcondition : Key k is removed from the BTree if it exists
 
 void BTree::remove(Node *x, int k, bool x_root)
 {
@@ -133,8 +133,8 @@ void BTree::remove(Node *x, int k, bool x_root)
 // return the index i of the first key in the btree node x where k <= x.keys[i]
 // if i = x.n then no such key exists
 
-// Precondition:
-// Postcondition:
+// Precondition: x is a valid BTree node
+// Postcondition: returns the index of the first key greater than or equal to k
 
 int BTree::find_k(Node *x, int k)
 {

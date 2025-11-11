@@ -13,9 +13,20 @@ void BTree::remove(int k) {
         return;
     }
 
-    remove(root,k,true) // x_root = true
+    remove(root, k ,true) // removing the node that has key is k
+
+    // 1. If the number of keys (n) on the root node is 0 (root -> n == 0) 
+    // 2. if the root is not a leaf node (!root -> leaf)
+    // if statement is true, so execute it.
 
     if (root -> n == 0 && !root -> leaf) {
+
+        Node *old_Root = root; // temporary save node 
+
+        root = root -> c[0] // root = root -> c[0]
+
+        delete old_Root; // prevent memory leak
+
     }
 }
 

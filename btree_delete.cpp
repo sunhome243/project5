@@ -13,7 +13,7 @@ NOTE: Please follow logic from CLRSv4 directly. Additionally, in cases 3a and 3b
 void BTree::remove(int k)
 {
 
-    if (not root)
+    if (!root)
     {
         return;
     }
@@ -28,10 +28,9 @@ void BTree::remove(int k)
     if (root->n == 0 && !root->leaf)
     {
         Node *old_Root = root; // temporary save node
-        root = root->c[0]; // root = root -> c[0]
-        delete old_Root; // prevent memory leak
+        root = root->c[0];     // root = root -> c[0]
+        delete old_Root;       // prevent memory leak
     }
-
 }
 
 // delete the key k from the btree rooted at x
@@ -41,76 +40,94 @@ void BTree::remove(int k)
 
 void BTree::remove(Node *x, int k, bool x_root)
 {
-    int i = find_k(x, k);
-
-    // Case 1 : Key k in node x, and x is leaf node.
-
-    if ( i < x -> n && x -> keys[i] == k && x -> leaf){
-        remove_leaf_key(x, i);
-        return;
-    }
-    
-
-    // Case 2:  Key k in node x, and x is inside node (not leaf).
-
-    if (i < x->n && x->keys[i] == k && not x->leaf )
+    while (x != nullptr)
     {
-        // 삭제할 키 k의 좌우 자식 노드
-        // left and right node of key k that should delete.
-        Node *y = x->c[i]; // Left-side
-        Node *z = x->c[i + 1]; // Right-side 
+        int i = find_k(x, k);
 
-        // Case 2-a: 왼쪽 자식 y가 최소 t개 이상의 키를 가진 경우?
-        if (y->n >= t)
+        // Case 1 : Key k in node x, and x is leaf node.
+
+        if (i < x->n && x->keys[i] == k && x->leaf)
         {
-            // y의 서브트리에서 k의 선행 키(predecessor)를
-            int pred = max_key(y); 
-
-            // x의 키 k를 선행 키로 교체
-            x->keys[i] = pred;
-            
-            // k가 아닌 선행 키 pred'를 y의 서브트리에서 재귀적으로 삭제
-            remove(y, pred, false); // 재귀 호출
-
+            remove_leaf_key(x, i);
+            return;
         }
 
-        // Case 2b
-        else if (z->n >= t)
+        // Case 2:  Key k in node x, and x is inside node (not leaf).
+
+        if (i < x->n && x->keys[i] == k && !x->leaf)
         {
-            int succ = min_key(z);
+            // left and right node of key k that should delete. (left child= precede k, right child= follows k)
+            Node *left_node = x->c[i];      // Left-side
+            Node *right_node = x->c[i + 1]; // Right-side
 
-            x->keys[i] = succ;
+            // Case 2-a: left child node left_node has at least t nodes
+            if (left_node->n >= t)
+            {
+                // find k's predecessor from left_node
+                int pred = max_key(left_node);
 
-            remove(z, succ, false);
+                // replace x.keys[i] into predecessor
+                x->keys[i] = pred;
+
+                // remove predecessor from left_node (recurssively)
+                remove(left_node, pred, false);
+            }
+
+            // Case 2-b: left node has t-1 keys but right node has at least t keys (left node can not be extracted(min key req) but right node is available)
+            else if (right_node->n >= t)
+            {
+                int succ = min_key(right_node);
+
+                x->keys[i] = succ;
+                // remove predecessor from left_node (recurssively)
+                remove(right_node, succ, false);
+            }
+
+            // Case 2-c: both left and right node is not available since both has t-1 keys
+            else
+            {
+
+                merge_left(left_node, right_node, k);
+
+                remove_internal_key(x, i, i + 1);
+
+                remove(left_node, k, false);
+            }
+            return; // Finishing up the Case 2
         }
-
-
-        // Case 2c
-        else
+        else // x is an internal node and does not contain key k
         {
+            Node *next = x->c[i];
+            Node *left_sib = (i > 0) ? x->c[i - 1] : nullptr;
+            Node *right_sib = (i < x->n) ? x->c[i + 1] : nullptr;
 
-            merge_left(y, z, k); 
-
-            remove_internal_key(x, i, i+1); 
-
-            remove(y, k, false);
-
+            if (next->n == (t - 1))
+            {
+                // Check right sibling first
+                if (right_sib != nullptr && right_sib->n > t - 1)
+                {
+                    swap_right(x, next, right_sib, i);
+                }
+                // Then check left sibling
+                else if (left_sib != nullptr && left_sib->n > t - 1)
+                {
+                    swap_left(x, next, left_sib, i - 1);
+                }
+                else if (right_sib != nullptr) // merge with right sibling
+                {
+                    merge_left(next, right_sib, x->keys[i]);
+                    remove_internal_key(x, i, i + 1);
+                }
+                else // merge with left sibling
+                {
+                    merge_left(left_sib, next, x->keys[i - 1]);
+                    remove_internal_key(x, i - 1, i);
+                    next = left_sib;
+                }
+            }
+            x = next; // update for the next loop
         }
-        return; // Finishing up the Case 2
-        
-
-        // I have to continue and finish up Case 3.
-
-
-
-
-
-
     }
-
-
-
-
 }
 
 // return the index i of the first key in the btree node x where k <= x.keys[i]

@@ -41,7 +41,7 @@ void BTree::remove(int k) {
 
 void BTree::remove(Node *x, int k, bool x_root)
 {
-    
+
 }
 
 // return the index i of the first key in the btree node x where k <= x.keys[i]
@@ -54,7 +54,11 @@ int BTree::find_k(Node *x, int k) {
 
     int i = 0;
 
-    
+    while (i < x-> n && k > x -> keys[i]) {
+        i++;
+    }
+
+    return i;
 
 }
 

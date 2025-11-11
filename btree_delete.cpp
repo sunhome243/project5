@@ -19,20 +19,19 @@ void BTree::remove(int k)
     }
 
     remove(root, k, true);
+
     // removing the node that has key is k
     // 1. If the number of keys (n) on the root node is 0 (root -> n == 0)
     // 2. if the root is not a leaf node (!root -> leaf)
     // if statement is true, so execute it.
 
     if (root->n == 0 && !root->leaf)
-    { // ke == 0 and root children count == 1 which is c[0]
-
+    {
         Node *old_Root = root; // temporary save node
-
         root = root->c[0]; // root = root -> c[0]
-
         delete old_Root; // prevent memory leak
     }
+
 }
 
 // delete the key k from the btree rooted at x
@@ -42,6 +41,14 @@ void BTree::remove(int k)
 
 void BTree::remove(Node *x, int k, bool x_root)
 {
+    int i = find_k(x, k);
+
+    // First Case : Key k in node x, and x is leaf node.
+    if ( i < x -> n && x -> keys[i] == k && x -> leaf){
+        remove_leaf_key(x, i);
+        return;
+    }
+
 }
 
 // return the index i of the first key in the btree node x where k <= x.keys[i]

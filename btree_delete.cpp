@@ -7,6 +7,10 @@ NOTE: Please follow logic from CLRSv4 directly. Additionally, in cases 3a and 3b
 
 // 1 Lukas
 // delete the key k from the btree
+
+// Precondition:
+// Postcondition:
+
 void BTree::remove(int k) {
 
     if (not root){
@@ -19,7 +23,7 @@ void BTree::remove(int k) {
     // 2. if the root is not a leaf node (!root -> leaf)
     // if statement is true, so execute it.
 
-    if (root -> n == 0 && !root -> leaf) {
+    if (root -> n == 0 && !root -> leaf) { // ke == 0 and root children count == 1 which is c[0]
 
         Node *old_Root = root; // temporary save node 
 
@@ -31,13 +35,24 @@ void BTree::remove(int k) {
 }
 
 // delete the key k from the btree rooted at x
+
+// Precondition:
+// Postcondition:
+
 void BTree::remove(Node *x, int k, bool x_root)
 {
+    
 }
 
 // return the index i of the first key in the btree node x where k <= x.keys[i]
 // if i = x.n then no such key exists
+
+// Precondition:
+// Postcondition:
+
 int BTree::find_k(Node *x, int k) {
+
+    int i = 0;
 
     
 

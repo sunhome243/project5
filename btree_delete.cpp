@@ -99,6 +99,8 @@ void BTree::remove(Node *x, int k, bool x_root)
         return; // Finishing up the Case 2
         
 
+        // I have to continue and finish up Case 3.
+
 
 
 

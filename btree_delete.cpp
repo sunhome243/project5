@@ -118,22 +118,23 @@ void BTree::remove(Node *x, int k, bool x_root)
 
             if (next->n == (t - 1))
             {
-                // Check right sibling first
+                // Check right sibling first if the right sibling has enough keys
                 if (right_sib != nullptr && right_sib->n > t - 1)
                 {
                     swap_right(x, next, right_sib, i);
                 }
-                // Then check left sibling
+                // Then check left sibling if the left sibling has enough keys
                 else if (left_sib != nullptr && left_sib->n > t - 1)
                 {
                     swap_left(x, next, left_sib, i - 1);
                 }
-                else if (right_sib != nullptr) // merge with right sibling
+                // Both siblings don't have enough keys
+                else if (right_sib != nullptr) // merge with right sibling if possible
                 {
                     merge_left(next, right_sib, x->keys[i]);
                     remove_internal_key(x, i, i + 1);
                 }
-                else // merge with left sibling
+                else // merge with left sibling if possible
                 {
                     merge_left(left_sib, next, x->keys[i - 1]);
                     remove_internal_key(x, i - 1, i);
@@ -155,7 +156,7 @@ int BTree::find_k(Node *x, int k)
 {
 
     int i = 0;
-
+    // Traverse the node until it finds k. Early termination for performance
     while (i < x->n && k > x->keys[i])
     {
         i++;
@@ -171,7 +172,7 @@ int BTree::find_k(Node *x, int k)
 
 void BTree::remove_leaf_key(Node *x, int i)
 {
-    if (!x->leaf)
+    if (!x->leaf) // If x is not leaf, return.
     {
         return;
     }

@@ -10,8 +10,10 @@ F
 C-K
 A,B-D,E-G,J-L
 
-C,F,K
+F
+C-K
 A-D,E-G,J-L
 
-C,F,K
+F
+C-K
 A-D-G,J-L

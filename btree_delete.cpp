@@ -5,9 +5,8 @@ NOTE: Please follow logic from CLRSv4 directly. Additionally, in cases 3a and 3b
 */
 
 // delete the key k from the btree
-
-// Precondition: BTree is not empty
-// Postcondition: Key k is removed from the BTree if it exists
+// Precondition: None (handles empty tree case)
+// Postcondition: Key k is removed from the BTree if it exists, tree height may decrease if root becomes empty
 
 void BTree::remove(int k)
 {
@@ -38,9 +37,8 @@ void BTree::remove(int k)
 }
 
 // delete the key k from the btree rooted at x
-
-// Precondition : BTree is not empty
-// Postcondition : Key k is removed from the BTree if it exists
+// Precondition: x is a valid node pointer, x is the root if x_root is true
+// Postcondition: Key k is removed from the subtree rooted at x if it exists, node x may be modified to maintain B-Tree properties (minimum t-1 keys except root)
 
 void BTree::remove(Node *x, int k, bool x_root)
 {
@@ -146,11 +144,9 @@ void BTree::remove(Node *x, int k, bool x_root)
     }
 }
 
-// return the index i of the first key in the btree node x where k <= x.keys[i]
-// if i = x.n then no such key exists
-
-// Precondition: x is a valid BTree node
-// Postcondition: returns the index of the first key greater than or equal to k
+// return the index i of the first key in the btree node x where k <= x.keys[i] if i = x.n then no such key exists
+// Precondition: x is a valid BTree node with x->n >= 0
+// Postcondition: returns the index i where 0 <= i <= x->n, if i < x->n then k <= x->keys[i], if i == x->n then k > all keys in x
 
 int BTree::find_k(Node *x, int k)
 {
@@ -166,9 +162,9 @@ int BTree::find_k(Node *x, int k)
 }
 
 // remove the key at index i from a btree leaf node x
-
-// Precondition: x is a leaf node and 0 <= i < x->n
-// Postcondition: key at index i is removed from node x
+// Precondition: x is a leaf node (x->leaf == true) and 0 <= i < x->n
+// Postcondition: key at index i is removed from node x, x->n is decremented by 1,
+//                all keys after index i are shifted left by one position
 
 void BTree::remove_leaf_key(Node *x, int i)
 {
@@ -184,9 +180,8 @@ void BTree::remove_leaf_key(Node *x, int i)
 }
 
 // remove the key at index i and child at index j from a btree internal node x
-
-// Precondition: x is an internal node and 0 <= i < x->n, 0 <= j <= x->n
-// Postcondition: key at index i and child at index j are removed from node x
+// Precondition: x is an internal node (x->leaf == false), 0 <= i < x->n, and 0 <= j <= x->n
+// Postcondition: key at index i and child pointer at index j are removed from node x, x->n is decremented by 1, all keys after index i and all child pointers after index j are shifted left by one position
 
 void BTree::remove_internal_key(Node *x, int i, int j)
 {
@@ -203,9 +198,8 @@ void BTree::remove_internal_key(Node *x, int i, int j)
 }
 
 // return the max key in the btree rooted at node x
-
-// Precondition: x is a valid BTree node
-// Postcondition: returns the maximum key in the subtree rooted at x
+// Precondition: x is a valid BTree node and x->n > 0
+// Postcondition: returns the maximum key in the subtree rooted at x, the maximum key is found by following rightmost child pointers until reaching a leaf
 
 int BTree::max_key(Node *x)
 {
@@ -217,9 +211,8 @@ int BTree::max_key(Node *x)
 }
 
 // return the min key in the btree rooted at node x
-
-// Precondition: x is a valid BTree node
-// Postcondition: returns the minimum key in the subtree rooted at x
+// Precondition: x is a valid BTree node and x->n > 0
+// Postcondition: returns the minimum key in the subtree rooted at x, the minimum key is found by following leftmost child pointers until reaching a leaf
 
 int BTree::min_key(Node *x)
 {
@@ -231,9 +224,8 @@ int BTree::min_key(Node *x)
 }
 
 // merge key k and all keys and children from y into y's LEFT sibling x
-
-// Precondition: x and y are siblings, and x has t-1 keys
-// Postcondition: all keys and children from y and key k are merged into x, and y is deleted
+// Precondition: x and y are adjacent siblings (x is left of y), both x and y have exactly t-1 keys, k is the separating key in the parent between x and y
+// Postcondition: x contains its original keys, separator key k, and all keys from y (total 2t-1 keys), x also contains all child pointers from y if not a leaf, y is deleted, memory is freed
 
 void BTree::merge_left(Node *x, Node *y, int k)
 {
@@ -263,9 +255,8 @@ void BTree::merge_left(Node *x, Node *y, int k)
 }
 
 // merge key k and all keys and children from y into y's RIGHT sibling x
-
-// Precondition: x and y are siblings, and x has t-1 keys
-// Postcondition: all keys and children from y and key k are merged into x, and y is deleted
+// Precondition: x and y are adjacent siblings (x is right of y), both x and y have exactly t-1 keys, k is the separating key in the parent between y and x
+// Postcondition: x contains all keys from y, separator key k, and its original keys (total 2t-1 keys), x also contains all child pointers from y if not a leaf, y is deleted, memory is freed
 
 void BTree::merge_right(Node *x, Node *y, int k)
 {
@@ -313,9 +304,8 @@ void BTree::merge_right(Node *x, Node *y, int k)
 // Move a key from y's LEFT sibling z up into x
 // Move appropriate child pointer from z into y
 // Let i be the index of the key dividing y and z in x
-
-// Precondition: y has t-1 keys and z has at least t keys
-// Postcondition: y has one more key, z has one less key, and the parent x is updated accordingly.
+// Precondition: x is the parent of y and z, z is the left sibling of y, y has exactly t-1 keys, z has at least t keys, i is the index in x where x->keys[i] separates z and y
+// Postcondition: y->n increases by 1, z->n decreases by 1, z's rightmost key moves to x->keys[i], x->keys[i] moves to y->keys[0], z's rightmost child moves to y->c[0] if internal node
 
 void BTree::swap_left(Node *x, Node *y, Node *z, int i)
 {
@@ -355,9 +345,8 @@ void BTree::swap_left(Node *x, Node *y, Node *z, int i)
 // Move a key from y's RIGHT sibling z up into x
 // Move appropriate child pointer from z into y
 // Let i be the index of the key dividing y and z in x
-
-// Precondition: y has t-1 keys and z has at least t keys
-// Postcondition: y has one more key, z has one less key, and the parent x is updated accordingly.
+// Precondition: x is the parent of y and z, z is the right sibling of y, y has exactly t-1 keys, z has at least t keys, i is the index in x where x->keys[i] separates y and z
+// Postcondition: y->n increases by 1, z->n decreases by 1, z's leftmost key moves to x->keys[i], x->keys[i] moves to y->keys[y->n], z's leftmost child moves to y->c[y->n+1] if internal node
 
 void BTree::swap_right(Node *x, Node *y, Node *z, int i)
 {

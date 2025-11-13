@@ -1,0 +1,42 @@
+* 92a4d07 - Sunho Kim (107231365+sunhome243@users.noreply.github.com) - 2025-11-12 : fix delete
+* 9190e3c - Sunho Kim (107231365+sunhome243@users.noreply.github.com) - 2025-11-11 : Improve sibling checks and add early termination in find_k for performance
+* 0af607a - Sunho Kim (107231365+sunhome243@users.noreply.github.com) - 2025-11-11 : Refactor btree_delete.txt by removing redundant lines and improving formatting
+* 90da641 - Hyowon Cho (ardese@naver.com) - 2025-11-11 :  run_test
+* a4cd52b - Sunho Kim (107231365+sunhome243@users.noreply.github.com) - 2025-11-11 : Fix remove_leaf_key to return early if the node is not a leaf and remove unused test_helpers function
+*   1048542 - Hyowon Cho (ardese@naver.com) - 2025-11-11 : Merge branch 'main' of https://github.com/sunhome243/project5
+|\  
+| * 4bb0a46 - Sunho Kim (107231365+sunhome243@users.noreply.github.com) - 2025-11-11 : Refactor BTree deletion logic by removing unnecessary newlines and improving formatting in btree_delete.cpp and btree_delete.txt
+| * 8bcf3a2 - Sunho Kim (107231365+sunhome243@users.noreply.github.com) - 2025-11-11 : Refactor BTree class by removing unnecessary newline before remove method
+* | b32c229 - Hyowon Cho (ardese@naver.com) - 2025-11-11 : fixing remove error
+|/  
+*   38c7c52 - Hyowon Cho (ardese@naver.com) - 2025-11-11 : Merge branch 'main' of https://github.com/sunhome243/project5
+|\  
+| * d50d1f9 - Sunho Kim (107231365+sunhome243@users.noreply.github.com) - 2025-11-11 : Add initial content for btree_insert functionality
+* | f3c9ca7 - Hyowon Cho (ardese@naver.com) - 2025-11-11 : queue
+|/  
+* e74e59c - Hyowon Cho (ardese@naver.com) - 2025-11-11 : fixing remove function
+* 8cbe702 - Hyowon Cho (ardese@naver.com) - 2025-11-11 : fixing max_key
+* d19b0fd - Hyowon Cho (ardese@naver.com) - 2025-11-11 : description 2
+* d0e060d - Hyowon Cho (ardese@naver.com) - 2025-11-11 : description
+* 645200b - Sunho Kim (107231365+sunhome243@users.noreply.github.com) - 2025-11-11 : Add initial implementation for btree_delete and btree_insert files
+* f09faad - Sunho Kim (107231365+sunhome243@users.noreply.github.com) - 2025-11-11 : Refactor BTree::remove method to enhance clarity and structure of case handling
+* bfac45e - Hyowon Cho (ardese@naver.com) - 2025-11-11 : description for my part
+* 5e58b2d - Sunho Kim (107231365+sunhome243@users.noreply.github.com) - 2025-11-11 : Add friend declaration for test_helpers function in BTree class
+*   7f512ed - phamdop1-bit (phamdo_p1@denison.edu) - 2025-11-11 : Merge branch 'main' of https://github.com/sunhome243/project5
+|\  
+| * 9e88ab8 - Sunho Kim (107231365+sunhome243@users.noreply.github.com) - 2025-11-11 : Fix conditional checks in BTree::remove method for clarity and correctness
+| * 7f61357 - Sunho Kim (107231365+sunhome243@users.noreply.github.com) - 2025-11-11 : Refactor BTree::remove method to streamline key deletion logic and improve handling of sibling nodes
+| * eb602eb - Sunho Kim (107231365+sunhome243@users.noreply.github.com) - 2025-11-11 : Refactor BTree::remove method for improved readability and maintainability
+* | 0d1b7de - phamdop1-bit (phamdo_p1@denison.edu) - 2025-11-11 : added merge left right and swap left right
+|/  
+* 6e25be3 - Hyowon Cho (ardese@naver.com) - 2025-11-11 : remove with three local variable 3
+* 9f5bec6 - Hyowon Cho (ardese@naver.com) - 2025-11-11 : remove with three local variable 2
+* 1ba38bd - Hyowon Cho (ardese@naver.com) - 2025-11-11 : remove with three local variable 1
+* 6a0bae8 - Sunho Kim (107231365+sunhome243@users.noreply.github.com) - 2025-11-10 : Implement B-Tree key removal methods and add helper tests for validation
+* 748eb69 - Hyowon Cho (ardese@naver.com) - 2025-11-11 : find_k function 2
+* 289a416 - Hyowon Cho (ardese@naver.com) - 2025-11-11 : find_k function 1
+* cd1a42c - Hyowon Cho (ardese@naver.com) - 2025-11-11 : remove(int k) function 2
+* 4086619 - Hyowon Cho (ardese@naver.com) - 2025-11-11 : remove(int k) function 1
+* 9c3eb95 - Sunho Kim (107231365+sunhome243@users.noreply.github.com) - 2025-11-10 : Add comments to clarify B-Tree deletion methods and structure
+* f0ccfea - Sunho Kim (107231365+sunhome243@users.noreply.github.com) - 2025-11-10 : Implement B-Tree structure and deletion functionality
+* 199c9ec - Sunho Kim (107231365+sunhome243@users.noreply.github.com) - 2025-11-10 : first commit
